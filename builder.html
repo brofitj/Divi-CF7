@@ -1,0 +1,70 @@
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const forms = document.querySelectorAll('.wpcf7-form');
+        
+        forms.forEach((form) => {
+            form.addEventListener('submit', function () {
+                const submitButton = form.querySelector('.wpcf7-submit');
+                const loader = form.querySelector('.tbr_loader');
+
+                // Tampilkan loader dan disable tombol
+                if (submitButton && loader) {
+                    submitButton.setAttribute('disabled', true);
+                    loader.style.display = 'inline-block';
+                }
+            });
+
+            // Event ketika form berhasil dikirim
+            document.addEventListener('wpcf7mailsent', function (event) {
+                if (event.target === form) {
+                    console.log('Form submitted successfully'); // Debug
+                    const submitButton = form.querySelector('.wpcf7-submit');
+                    const loader = form.querySelector('.tbr_loader');
+
+                    // Reset tombol dan sembunyikan loader
+                    if (submitButton && loader) {
+                        submitButton.removeAttribute('disabled');
+                        loader.style.display = 'none';
+                    }
+
+                    // Sembunyikan form dan tampilkan pesan sukses
+                    const successMessage = document.createElement('div');
+                    successMessage.className = 'custom-success-message';
+                    successMessage.innerHTML = `
+                        <h2>Terima Kasih!</h2>
+                        <p>Pesan Anda telah berhasil dikirim. Kami akan segera menghubungi Anda.</p>
+                    `;
+
+                    form.style.display = 'none'; // Sembunyikan form
+                    form.parentNode.appendChild(successMessage); // Tambahkan pesan sukses
+                }
+            });
+
+            // Event ketika form gagal dikirim
+            document.addEventListener('wpcf7mailfailed', function (event) {
+                if (event.target === form) {
+                    console.log('Form failed to send'); // Debug
+                    const submitButton = form.querySelector('.wpcf7-submit');
+                    const loader = form.querySelector('.tbr_loader');
+
+                    // Reset tombol dan sembunyikan loader
+                    if (submitButton && loader) {
+                        submitButton.removeAttribute('disabled');
+                        loader.style.display = 'none';
+                    }
+
+                    // Tambahkan pesan error (opsional)
+                    let errorMessage = form.querySelector('.custom-error-message');
+                    if (!errorMessage) {
+                        errorMessage = document.createElement('div');
+                        errorMessage.className = 'custom-error-message';
+                        errorMessage.innerHTML = `
+                            <p>Terjadi kesalahan saat mengirim pesan. Silakan coba lagi.</p>
+                        `;
+                        form.parentNode.appendChild(errorMessage);
+                    }
+                }
+            });
+        });
+    });
+</script>
